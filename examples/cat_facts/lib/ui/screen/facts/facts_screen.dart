@@ -28,10 +28,10 @@ class FactsScreen extends CoreMwwmWidget {
   }) : super(key: key, widgetModelBuilder: createFactsScreenWidgetModel);
 
   @override
-  State<StatefulWidget> createState() => _FactsSceenState();
+  State<StatefulWidget> createState() => _FactsScreenState();
 }
 
-class _FactsSceenState extends WidgetState<FactsScreenWidgetModel> {
+class _FactsScreenState extends WidgetState<FactsScreenWidgetModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
