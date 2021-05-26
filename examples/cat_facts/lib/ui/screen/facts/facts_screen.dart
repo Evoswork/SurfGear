@@ -39,7 +39,6 @@ class _FactsScreenState extends WidgetState<FactsScreenWidgetModel> {
         title: const Text('Cats facts'),
         actions: [
           TextButton(
-            key: const Key('theme_switcher'),
             onPressed: () {
               wm.switchTheme();
             },
