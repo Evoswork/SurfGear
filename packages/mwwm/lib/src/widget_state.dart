@@ -43,8 +43,7 @@ abstract class CoreMwwmWidget extends StatefulWidget {
 
 /// Base class for state of [CoreMwwmWidget].
 /// Has [WidgetModel] from [initState].
-abstract class WidgetState<WM extends WidgetModel>
-    extends State<CoreMwwmWidget> {
+abstract class WidgetState<WM extends WidgetModel> extends State<CoreMwwmWidget> {
   /// [WidgetModel] for widget.
   late WM _wm;
 
@@ -56,7 +55,7 @@ abstract class WidgetState<WM extends WidgetModel>
   @override
   void initState() {
     _wm = widget.widgetModelBuilder(context) as WM;
-
+    _wm.onBeforeInitState();
     super.initState();
 
     _wm

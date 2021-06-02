@@ -39,11 +39,12 @@ abstract class WidgetModel {
   final _compositeSubscription = CompositeSubscription();
 
   /// called when widget ready
-  @mustCallSuper
+  void onBeforeInitState() {}
+
+  /// called when widget ready
   void onLoad() {}
 
   /// here need to bind
-  @mustCallSuper
   void onBind() {}
 
   /// subscribe for interactors
