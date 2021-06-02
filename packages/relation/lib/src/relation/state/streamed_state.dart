@@ -42,7 +42,7 @@ class StreamedState<T> implements Event<T> {
   final BehaviorSubject<T?> stateSubject = BehaviorSubject();
 
   /// current value in stream
-  T? get value => stateSubject.value;
+  T? get value => stateSubject.valueOrNull;
 
   @override
   Stream<T?> get stream => stateSubject.stream;
