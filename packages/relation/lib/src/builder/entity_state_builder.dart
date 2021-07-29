@@ -19,7 +19,7 @@ typedef DataWidgetBuilder<T> = Widget Function(BuildContext context, T? data);
 
 typedef ErrorWidgetBuilder = Widget Function(BuildContext context, Object? e);
 
-typedef DataErrorWidgetBuidler<T> = Widget Function(
+typedef DataErrorWidgetBuilder<T> = Widget Function(
   BuildContext context,
   T? data,
   Object? e,
@@ -53,9 +53,8 @@ class EntityStateBuilder<T> extends StatelessWidget {
     required this.builder,
     this.loadingBuilder,
     this.errorDataBuilder,
-    this.errorBuilder,
-    this.loadingChild = const SizedBox(),
-    this.errorChild = const SizedBox(),
+    this.loadingChild = const SizedBox.shrink(),
+    this.errorChild = const SizedBox.shrink(),
     Key? key,
   }) : super(key: key);
 
@@ -69,10 +68,7 @@ class EntityStateBuilder<T> extends StatelessWidget {
   final DataWidgetBuilder<T>? loadingBuilder;
 
   /// WidgetBuilder for error with previous data
-  final DataErrorWidgetBuidler<T>? errorDataBuilder;
-
-  /// WidgetBuilder for error
-  final ErrorWidgetBuilder? errorBuilder;
+  final DataErrorWidgetBuilder<T>? errorDataBuilder;
 
   /// Loading child widget
   final Widget loadingChild;
@@ -87,24 +83,22 @@ class EntityStateBuilder<T> extends StatelessWidget {
       initialData: streamedState.value,
       builder: (context, snapshot) {
         final streamData = snapshot.data;
-        if (streamData == null || streamData.isLoading) {
-          if (loadingBuilder != null) {
-            return loadingBuilder!(context, streamData?.data);
-          } else {
-            return loadingChild;
+        if (streamData != null) {
+          if (!streamData.isLoading && !streamData.hasError) {
+            return builder(context, streamData.data);
+          } else if (streamData.isLoading) {
+            return loadingBuilder != null
+                ? loadingBuilder!(context, streamData.data)
+                : loadingChild;
+          } else if (streamData.hasError) {
+            if (errorDataBuilder != null) {
+              return errorDataBuilder!(
+                context,
+                streamData.data,
+                streamData.error,
+              );
+            }
           }
-        } else if (streamData.hasError) {
-          if (errorDataBuilder != null) {
-            return errorDataBuilder!(
-              context,
-              streamData.data,
-              streamData.error,
-            );
-          } else if (errorBuilder != null) {
-            return errorBuilder!(context, streamData.error);
-          }
-        } else if (streamData.data != null) {
-          return builder(context, streamData.data);
         }
 
         return errorChild;
