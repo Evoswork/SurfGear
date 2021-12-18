@@ -39,7 +39,7 @@ abstract class WidgetModel {
   final _compositeSubscription = CompositeSubscription();
 
   /// called when widget ready
-  void onBeforeInitState() {}
+  void onInit() {}
 
   /// called when widget ready
   void onLoad() {}
@@ -53,8 +53,7 @@ abstract class WidgetModel {
     void Function(T? value) onValue, {
     void Function(Object error)? onError,
   }) =>
-      _compositeSubscription
-          .add(stream.listen(onValue, onError: onError?.call));
+      _compositeSubscription.add(stream.listen(onValue, onError: onError?.call));
 
   /// subscribe for interactors with default handle error
   StreamSubscription<T?> subscribeHandleError<T>(
@@ -74,27 +73,38 @@ abstract class WidgetModel {
   /// Call a future.
   /// Using Rx wrappers with [subscribe] method is preferable.
   void doFuture<T>(
-    Future<T> future,
-    void Function(T value) onValue, {
+    Future<T> future, {
+    void Function(T value)? onValue,
     void Function(Object error)? onError,
   }) {
-    // ignore: avoid_types_on_closure_parameters
-    future.then(onValue).catchError((Object e) {
-      onError?.call(e);
-    });
+    if (onValue == null) {
+      future.catchError((Object e) {
+        onError?.call(e);
+      });
+    } else {
+      future.then(onValue).catchError((Object e) {
+        onError?.call(e);
+      });
+    }
   }
 
   /// Call a future with default error handling
   void doFutureHandleError<T>(
-    Future<T> future,
-    void Function(T value) onValue, {
+    Future<T> future, {
+    void Function(T value)? onValue,
     void Function(Object error)? onError,
   }) {
-    // ignore: avoid_types_on_closure_parameters
-    future.then(onValue).catchError((Object e) {
-      handleError(e);
-      onError?.call(e);
-    });
+    if (onValue == null) {
+      future.catchError((Object e) {
+        handleError(e);
+        onError?.call(e);
+      });
+    } else {
+      future.then(onValue).catchError((Object e) {
+        handleError(e);
+        onError?.call(e);
+      });
+    }
   }
 
   /// Close streams of WM

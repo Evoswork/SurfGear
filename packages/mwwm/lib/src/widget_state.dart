@@ -55,7 +55,7 @@ abstract class WidgetState<WM extends WidgetModel> extends State<CoreMwwmWidget>
   @override
   void initState() {
     _wm = widget.widgetModelBuilder(context) as WM;
-    _wm.onBeforeInitState();
+    _wm.onInit();
     super.initState();
 
     _wm
