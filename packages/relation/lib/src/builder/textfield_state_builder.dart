@@ -20,17 +20,17 @@ import 'package:relation/src/relation/state/streamed_state.dart';
 
 /// Stream builder for text fields
 class TextFieldStateBuilder extends StatelessWidget {
-  const TextFieldStateBuilder({
-    required this.state,
-    required this.stateBuilder,
-    Key? key,
-  }) : super(key: key);
-
   /// State of text field
   final TextFieldStreamedState state;
 
   /// Builder of state
   final Widget Function(BuildContext, TextFieldState?) stateBuilder;
+
+  const TextFieldStateBuilder({
+    required this.state,
+    required this.stateBuilder,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +49,9 @@ class TextFieldStateBuilder extends StatelessWidget {
 ///   - content
 /// todo come up with how to combine with the controller
 class TextFieldState extends EntityState<String> {
+  /// Text field is enabled
+  final bool isEnabled;
+
   /// Content constructor
   TextFieldState.content(String data)
       : isEnabled = true,
@@ -68,9 +71,6 @@ class TextFieldState extends EntityState<String> {
   TextFieldState.enabled(String? data, {bool enabled = true})
       : isEnabled = enabled,
         super.content(data);
-
-  /// Text field is enabled
-  final bool isEnabled;
 }
 
 /// Stream view of text field state
@@ -78,15 +78,6 @@ class TextFieldState extends EntityState<String> {
 /// [mandatory], [canEdit]
 class TextFieldStreamedState extends StreamedState<TextFieldState>
     implements EntityEvent<String, TextFieldState> {
-  TextFieldStreamedState(
-    String initialData, {
-    String validator = '',
-    this.mandatory = false,
-    this.canEdit = true,
-    this.incorrectTextMsg = '',
-  })  : validator = RegExp(validator),
-        super(TextFieldState.enabled(initialData, enabled: canEdit));
-
   /// Validator of regex
   final RegExp validator;
 
@@ -98,6 +89,15 @@ class TextFieldStreamedState extends StreamedState<TextFieldState>
 
   /// Text of error
   final String incorrectTextMsg;
+
+  TextFieldStreamedState(
+    String initialData, {
+    String validator = '',
+    this.mandatory = false,
+    this.canEdit = true,
+    this.incorrectTextMsg = '',
+  })  : validator = RegExp(validator),
+        super(TextFieldState.enabled(initialData, enabled: canEdit));
 
   @override
   Future<TextFieldState?> content([String data = '']) {
@@ -130,7 +130,7 @@ class TextFieldStreamedState extends StreamedState<TextFieldState>
 
 /// Exception of incorrect text wrapper
 class IncorrectTextException implements Exception {
-  const IncorrectTextException(this.message);
-
   final String message;
+
+  const IncorrectTextException(this.message);
 }

@@ -17,15 +17,14 @@ import 'package:relation/src/relation/action/action.dart';
 
 /// Action for scroll
 class ScrollOffsetAction extends Action<double> {
-  ScrollOffsetAction([void Function(double? data)? onChanged])
-      : super(onChanged) {
+  /// Scroll controller of some list
+  final flutter.ScrollController controller = flutter.ScrollController();
+
+  ScrollOffsetAction([void Function(double? data)? onChanged]) : super(onChanged) {
     controller.addListener(() {
       accept(controller.offset);
     });
   }
-
-  /// Scroll controller of some list
-  final flutter.ScrollController controller = flutter.ScrollController();
 
   @override
   Future<void> dispose() {

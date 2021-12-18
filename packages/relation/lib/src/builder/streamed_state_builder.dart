@@ -14,21 +14,22 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:relation/src/relation/state/streamed_state.dart';
+import 'package:relation/src/relation/state/streamed_state_ns.dart';
 
 /// Widget for StreamedState.
 /// Wrap Flutter StreamBuilder
 class StreamedStateBuilder<T> extends StatelessWidget {
-  const StreamedStateBuilder({
-    required this.streamedState,
-    required this.builder,
-    Key? key,
-  }) : super(key: key);
-
   /// Input streamed state
   final StreamedState<T> streamedState;
 
   /// Builder of widget child
   final Widget Function(BuildContext, T?) builder;
+
+  const StreamedStateBuilder({
+    required this.streamedState,
+    required this.builder,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,31 @@ class StreamedStateBuilder<T> extends StatelessWidget {
       builder: (ctx, snapshot) => builder(ctx, snapshot.data),
       stream: streamedState.stream,
       initialData: streamedState.value,
+    );
+  }
+}
+
+/// Widget for StreamedState.
+/// Wrap Flutter StreamBuilder
+class StreamedStateBuilderNS<T> extends StatelessWidget {
+  /// Input streamed state
+  final StreamedStateNS<T> streamedStateNS;
+
+  /// Builder of widget child
+  final Widget Function(BuildContext, T) builder;
+
+  const StreamedStateBuilderNS({
+    required this.streamedStateNS,
+    required this.builder,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<T>(
+      builder: (ctx, snapshot) => builder(ctx, snapshot.data!),
+      stream: streamedStateNS.stream,
+      initialData: streamedStateNS.value,
     );
   }
 }

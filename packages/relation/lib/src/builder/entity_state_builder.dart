@@ -35,7 +35,6 @@ typedef DataErrorWidgetBuilder<T> = Widget Function(
 ///
 /// Error builders priority order:
 /// 1. [errorDataBuilder]
-/// 2. [errorBuilder]
 /// 3. [errorChild]
 ///
 /// ### example
@@ -48,16 +47,6 @@ typedef DataErrorWidgetBuilder<T> = Widget Function(
 ///    );
 ///  ```
 class EntityStateBuilder<T> extends StatelessWidget {
-  const EntityStateBuilder({
-    required this.streamedState,
-    required this.builder,
-    this.loadingBuilder,
-    this.errorDataBuilder,
-    this.loadingChild = const SizedBox.shrink(),
-    this.errorChild = const SizedBox.shrink(),
-    Key? key,
-  }) : super(key: key);
-
   /// StreamedState of entity
   final EntityStreamedState<T> streamedState;
 
@@ -75,6 +64,16 @@ class EntityStateBuilder<T> extends StatelessWidget {
 
   /// Error child widget
   final Widget errorChild;
+
+  const EntityStateBuilder({
+    required this.streamedState,
+    required this.builder,
+    this.loadingBuilder,
+    this.errorDataBuilder,
+    this.loadingChild = const SizedBox.shrink(),
+    this.errorChild = const SizedBox.shrink(),
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

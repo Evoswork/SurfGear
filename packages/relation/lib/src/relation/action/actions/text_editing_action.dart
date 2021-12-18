@@ -17,6 +17,9 @@ import 'package:relation/src/relation/action/action.dart';
 
 /// Action for text editing
 class TextEditingAction extends Action<String> {
+  /// TextEditing controller of text field
+  final ExtendedTextEditingController controller = ExtendedTextEditingController();
+
   TextEditingAction([
     void Function(String? data)? onChanged,
   ]) : super(onChanged) {
@@ -24,10 +27,6 @@ class TextEditingAction extends Action<String> {
       accept(controller.value.text);
     });
   }
-
-  /// TextEditing controller of text field
-  final ExtendedTextEditingController controller =
-      ExtendedTextEditingController();
 
   @override
   Future<void> dispose() {
@@ -40,8 +39,6 @@ class TextEditingAction extends Action<String> {
 /// When updating text through the setter, moves the cursor to the end of the
 /// line
 class ExtendedTextEditingController extends flutter.TextEditingController {
-  ExtendedTextEditingController({String? text}) : super(text: text);
-
   @override
   set text(String newText) {
     value = value.copyWith(
@@ -50,4 +47,6 @@ class ExtendedTextEditingController extends flutter.TextEditingController {
       composing: flutter.TextRange.empty,
     );
   }
+
+  ExtendedTextEditingController({String? text}) : super(text: text);
 }
