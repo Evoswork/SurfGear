@@ -24,3 +24,4 @@ export 'package:relation/src/relation/action/actions/text_editing_action.dart';
 export 'package:relation/src/relation/event.dart';
 export 'package:relation/src/relation/state/entity_state.dart';
 export 'package:relation/src/relation/state/streamed_state.dart';
+export 'package:relation/src/relation/state/streamed_state_ns.dart';
