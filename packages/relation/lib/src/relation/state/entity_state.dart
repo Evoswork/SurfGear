@@ -53,6 +53,9 @@ class EntityState<T> {
   /// State has error
   final bool hasError;
 
+  /// State is content
+  final bool isContent;
+
   /// Error from state
   final Object? error;
 
@@ -60,6 +63,7 @@ class EntityState<T> {
     this.data,
     this.isLoading = false,
     this.hasError = false,
+    this.isContent = false,
     this.error,
   });
 
@@ -67,16 +71,19 @@ class EntityState<T> {
   EntityState.loading([this.data])
       : isLoading = true,
         hasError = false,
+        isContent = false,
         error = null;
 
   /// Error constructor
   EntityState.error([this.error, this.data])
       : isLoading = false,
+        isContent = false,
         hasError = true;
 
   /// Content constructor
   EntityState.content([this.data])
       : isLoading = false,
         hasError = false,
+        isContent = true,
         error = null;
 }
