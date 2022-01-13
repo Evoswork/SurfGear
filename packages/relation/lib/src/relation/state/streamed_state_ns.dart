@@ -6,7 +6,7 @@ class StreamedStateNS<T> implements EventNS<T> {
   final BehaviorSubject<T> stateSubject = BehaviorSubject();
 
   /// current value in stream
-  T? get value => stateSubject.valueOrNull;
+  T get value => stateSubject.value;
 
   @override
   Stream<T> get stream => stateSubject.stream;
