@@ -53,7 +53,12 @@ abstract class WidgetModel {
     void Function(T? value) onValue, {
     void Function(Object error)? onError,
   }) =>
-      _compositeSubscription.add(stream.listen(onValue, onError: onError?.call));
+      _compositeSubscription.add(
+        stream.listen(onValue, onError: (e) {
+          if (onError == null) throw e;
+          onError(e);
+        }),
+      );
 
   /// subscribe for interactors with default handle error
   StreamSubscription<T?> subscribeHandleError<T>(
@@ -76,14 +81,16 @@ abstract class WidgetModel {
     Future<T> future, {
     void Function(T value)? onValue,
     void Function(Object error)? onError,
-  }) {
+  }) async {
     if (onValue == null) {
       future.catchError((Object e) {
-        onError?.call(e);
+        if (onError == null) throw e;
+        onError(e);
       });
     } else {
       future.then(onValue).catchError((Object e) {
-        onError?.call(e);
+        if (onError == null) throw e;
+        onError(e);
       });
     }
   }
@@ -115,6 +122,7 @@ abstract class WidgetModel {
   /// standard error handling
   @protected
   void handleError(Object e) {
+    if (_errorHandler == null) throw e;
     _errorHandler?.handleError(e);
   }
 }
