@@ -52,13 +52,24 @@ abstract class WidgetModel {
     Stream<T?> stream,
     void Function(T? value) onValue, {
     void Function(Object error)? onError,
-  }) =>
-      _compositeSubscription.add(
-        stream.listen(onValue, onError: (e) {
-          if (onError == null) throw e;
-          onError(e);
-        }),
-      );
+  }) {
+    final subscription = stream.listen((value) {
+      try {
+        onValue.call(value);
+      } catch (e) {
+        if (onError == null) rethrow;
+        onError.call(e);
+      }
+    });
+    return _compositeSubscription.add<T>(subscription);
+
+    // return _compositeSubscription.add(
+    //   stream.listen(onValue, onError: (e) {
+    //     if (onError == null) throw e;
+    //     onError(e);
+    //   }),
+    // );
+  }
 
   /// subscribe for interactors with default handle error
   StreamSubscription<T?> subscribeHandleError<T>(
@@ -66,14 +77,28 @@ abstract class WidgetModel {
     void Function(T value) onValue, {
     void Function(Object error)? onError,
   }) {
-    // ignore: avoid_types_on_closure_parameters
-    final subscription = stream.listen(onValue, onError: (Object e) {
-      handleError(e);
-      onError?.call(e);
+    final subscription = stream.listen((value) {
+      try {
+        onValue.call(value);
+      } catch (e, s) {
+        if (onError == null && _errorHandler == null) rethrow;
+        onError?.call(e);
+        handleError(e, s);
+      }
     });
-
     return _compositeSubscription.add<T>(subscription);
   }
+
+  // late StreamSubscription<T> subscription;
+  // try {
+  // subscription = stream.listen(onValue);
+  // return _compositeSubscription.add<T>(subscription);
+  // } catch (e, s) {
+  // if (onError == null && _errorHandler == null) rethrow;
+  // onError?.call(e);
+  // handleError(e, s);
+  // }
+  // return _compositeSubscription.add<T>(subscription);
 
   /// Call a future.
   /// Using Rx wrappers with [subscribe] method is preferable.
@@ -82,16 +107,16 @@ abstract class WidgetModel {
     void Function(T value)? onValue,
     void Function(Object error)? onError,
   }) async {
-    if (onValue == null) {
-      future.catchError((Object e) {
-        if (onError == null) throw e;
-        onError(e);
-      });
-    } else {
-      future.then(onValue).catchError((Object e) {
-        if (onError == null) throw e;
-        onError(e);
-      });
+    try {
+      if (onValue == null) {
+        await future;
+      } else {
+        final result = await future;
+        onValue.call(result);
+      }
+    } catch (e) {
+      if (onError == null) rethrow;
+      onError(e);
     }
   }
 
@@ -100,17 +125,18 @@ abstract class WidgetModel {
     Future<T> future, {
     void Function(T value)? onValue,
     void Function(Object error)? onError,
-  }) {
-    if (onValue == null) {
-      future.catchError((Object e) {
-        handleError(e);
-        onError?.call(e);
-      });
-    } else {
-      future.then(onValue).catchError((Object e) {
-        handleError(e);
-        onError?.call(e);
-      });
+  }) async {
+    try {
+      if (onValue == null) {
+        await future;
+      } else {
+        final result = await future;
+        onValue.call(result);
+      }
+    } catch (e, s) {
+      if (onError == null && _errorHandler == null) rethrow;
+      onError?.call(e);
+      handleError(e, s);
     }
   }
 
@@ -121,8 +147,7 @@ abstract class WidgetModel {
 
   /// standard error handling
   @protected
-  void handleError(Object e) {
-    if (_errorHandler == null) throw e;
-    _errorHandler?.handleError(e);
+  void handleError(Object e, dynamic s) {
+    _errorHandler?.handleError(e, s);
   }
 }
