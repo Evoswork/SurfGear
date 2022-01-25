@@ -17,5 +17,5 @@
 abstract class ErrorHandler {
   const ErrorHandler();
 
-  void handleError(Object e, dynamic s);
+  bool handleError(Object e, StackTrace? s);
 }

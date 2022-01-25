@@ -4,8 +4,9 @@ import 'package:mwwm/mwwm.dart';
 /// Default error handler for [WidgetModelDependencies]
 class DefaultErrorHandler implements ErrorHandler {
   @override
-  void handleError(Object e, s) {
+  bool handleError(Object e, StackTrace? s) {
     debugPrint(e.toString());
     debugPrint(s.toString());
+    return true;
   }
 }

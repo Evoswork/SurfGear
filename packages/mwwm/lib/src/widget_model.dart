@@ -83,7 +83,8 @@ abstract class WidgetModel {
       } catch (e, s) {
         if (onError == null && _errorHandler == null) rethrow;
         onError?.call(e);
-        handleError(e, s);
+        final isSuccessfully = handleError(e, s);
+        if (!isSuccessfully) rethrow;
       }
     });
     return _compositeSubscription.add<T>(subscription);
@@ -136,7 +137,8 @@ abstract class WidgetModel {
     } catch (e, s) {
       if (onError == null && _errorHandler == null) rethrow;
       onError?.call(e);
-      handleError(e, s);
+      final isSuccessfully = handleError(e, s);
+      if (!isSuccessfully) rethrow;
     }
   }
 
@@ -147,7 +149,7 @@ abstract class WidgetModel {
 
   /// standard error handling
   @protected
-  void handleError(Object e, dynamic s) {
-    _errorHandler?.handleError(e, s);
+  bool handleError(Object e, dynamic s) {
+    return _errorHandler?.handleError(e, s) ?? false;
   }
 }
