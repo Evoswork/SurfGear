@@ -62,13 +62,6 @@ abstract class WidgetModel {
       }
     });
     return _compositeSubscription.add<T>(subscription);
-
-    // return _compositeSubscription.add(
-    //   stream.listen(onValue, onError: (e) {
-    //     if (onError == null) throw e;
-    //     onError(e);
-    //   }),
-    // );
   }
 
   /// subscribe for interactors with default handle error
@@ -84,22 +77,11 @@ abstract class WidgetModel {
         if (onError == null && _errorHandler == null) rethrow;
         onError?.call(e);
         final isSuccessfully = handleError(e, s);
-        if (!isSuccessfully) rethrow;
+        if (!isSuccessfully && onError == null) rethrow;
       }
     });
     return _compositeSubscription.add<T>(subscription);
   }
-
-  // late StreamSubscription<T> subscription;
-  // try {
-  // subscription = stream.listen(onValue);
-  // return _compositeSubscription.add<T>(subscription);
-  // } catch (e, s) {
-  // if (onError == null && _errorHandler == null) rethrow;
-  // onError?.call(e);
-  // handleError(e, s);
-  // }
-  // return _compositeSubscription.add<T>(subscription);
 
   /// Call a future.
   /// Using Rx wrappers with [subscribe] method is preferable.
@@ -138,7 +120,7 @@ abstract class WidgetModel {
       if (onError == null && _errorHandler == null) rethrow;
       onError?.call(e);
       final isSuccessfully = handleError(e, s);
-      if (!isSuccessfully) rethrow;
+      if (!isSuccessfully && onError == null) rethrow;
     }
   }
 
