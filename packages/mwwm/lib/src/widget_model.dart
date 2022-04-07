@@ -51,14 +51,14 @@ abstract class WidgetModel {
   StreamSubscription<T?> subscribe<T>(
     Stream<T?> stream,
     void Function(T? value) onValue, {
-    void Function(Object error)? onError,
+    void Function(Object error, [Object trace])? onError,
   }) {
     final subscription = stream.listen((value) {
       try {
         onValue.call(value);
-      } catch (e) {
+      } catch (e, s) {
         if (onError == null) rethrow;
-        onError.call(e);
+        onError.call(e, s);
       }
     });
     return _compositeSubscription.add<T>(subscription);
@@ -68,14 +68,14 @@ abstract class WidgetModel {
   StreamSubscription<T?> subscribeHandleError<T>(
     Stream<T> stream,
     void Function(T value) onValue, {
-    void Function(Object error)? onError,
+    void Function(Object error, [Object trace])? onError,
   }) {
     final subscription = stream.listen((value) {
       try {
         onValue.call(value);
       } catch (e, s) {
         if (onError == null && _errorHandler == null) rethrow;
-        onError?.call(e);
+        onError?.call(e, s);
         final isSuccessfully = handleError(e, s);
         if (!isSuccessfully && onError == null) rethrow;
       }
@@ -88,7 +88,7 @@ abstract class WidgetModel {
   void doFuture<T>(
     Future<T> future, {
     void Function(T value)? onValue,
-    void Function(Object error)? onError,
+    void Function(Object error, [Object trace])? onError,
   }) async {
     try {
       if (onValue == null) {
@@ -97,9 +97,9 @@ abstract class WidgetModel {
         final result = await future;
         onValue.call(result);
       }
-    } catch (e) {
+    } catch (e, s) {
       if (onError == null) rethrow;
-      onError(e);
+      onError(e, s);
     }
   }
 
@@ -107,7 +107,7 @@ abstract class WidgetModel {
   void doFutureHandleError<T>(
     Future<T> future, {
     void Function(T value)? onValue,
-    void Function(Object error)? onError,
+    void Function(Object error, [Object trace])? onError,
   }) async {
     try {
       if (onValue == null) {
@@ -118,7 +118,7 @@ abstract class WidgetModel {
       }
     } catch (e, s) {
       if (onError == null && _errorHandler == null) rethrow;
-      onError?.call(e);
+      onError?.call(e, s);
       final isSuccessfully = handleError(e, s);
       if (!isSuccessfully && onError == null) rethrow;
     }
