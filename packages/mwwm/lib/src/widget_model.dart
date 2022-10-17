@@ -53,10 +53,13 @@ abstract class WidgetModel {
     bool? cancelOnError,
   }) {
     final subscription = stream.listen(
-      (value) => onValue.call(value),
-      onError: (Object e, StackTrace s) {
-        if (onError == null) return throw e;
-        onError.call(e, s);
+      (value) {
+        try {
+          onValue.call(value);
+        } catch (e, s) {
+          if (onError == null) rethrow;
+          onError.call(e, s);
+        }
       },
       cancelOnError: cancelOnError,
     );
@@ -80,12 +83,6 @@ abstract class WidgetModel {
           final isSuccessfully = handleError(e, s);
           if (!isSuccessfully && onError == null) rethrow;
         }
-      },
-      onError: (Object e, StackTrace s) {
-        if (onError == null && _errorHandler == null) return throw e;
-        onError?.call(e, s);
-        final isSuccessfully = handleError(e, s);
-        if (!isSuccessfully && onError == null) return throw e;
       },
       cancelOnError: cancelOnError,
     );
