@@ -55,7 +55,7 @@ abstract class WidgetModel {
     final subscription = stream.listen(
       (value) => onValue.call(value),
       onError: (Object e, StackTrace s) {
-        if (onError == null) throw e;
+        if (onError == null) return throw e;
         onError.call(e, s);
       },
       cancelOnError: cancelOnError,
@@ -67,16 +67,16 @@ abstract class WidgetModel {
   StreamSubscription<T?> subscribeHandleError<T>(
     Stream<T> stream,
     void Function(T value) onValue, {
-    void Function(Object error, Object stackTrace)? onError,
+    void Function(Object error, StackTrace stackTrace)? onError,
     bool? cancelOnError,
   }) {
     final subscription = stream.listen(
       (value) => onValue.call(value),
       onError: (Object e, StackTrace s) {
-        if (onError == null && _errorHandler == null) throw e;
+        if (onError == null && _errorHandler == null) return throw e;
         onError?.call(e, s);
         final isSuccessfully = handleError(e, s);
-        if (!isSuccessfully && onError == null) throw e;
+        if (!isSuccessfully && onError == null) return throw e;
       },
       cancelOnError: cancelOnError,
     );
@@ -88,7 +88,7 @@ abstract class WidgetModel {
   void doFuture<T>(
     Future<T> future, {
     void Function(T value)? onValue,
-    void Function(Object error, Object stackTrace)? onError,
+    void Function(Object error, StackTrace stackTrace)? onError,
   }) async {
     try {
       if (onValue == null) {
@@ -107,7 +107,7 @@ abstract class WidgetModel {
   void doFutureHandleError<T>(
     Future<T> future, {
     void Function(T value)? onValue,
-    void Function(Object error, Object stackTrace)? onError,
+    void Function(Object error, StackTrace stackTrace)? onError,
   }) async {
     try {
       if (onValue == null) {
