@@ -59,7 +59,10 @@ abstract class WidgetModel {
         if (onError == null) throw e;
         onError.call(e, s);
       },
-    );
+    )..onError((Object e, StackTrace s) {
+        if (onError == null) throw e;
+        onError.call(e, s);
+      });
     return _compositeSubscription.add<T>(subscription);
   }
 
@@ -79,7 +82,12 @@ abstract class WidgetModel {
         final isSuccessfully = handleError(e, s);
         if (!isSuccessfully && onError == null) throw e;
       },
-    );
+    )..onError((Object e, StackTrace s) {
+      if (onError == null && _errorHandler == null) throw e;
+      onError?.call(e, s);
+      final isSuccessfully = handleError(e, s);
+      if (!isSuccessfully && onError == null) throw e;
+    });
     return _compositeSubscription.add<T>(subscription);
   }
 
