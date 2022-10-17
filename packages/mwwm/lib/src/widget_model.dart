@@ -50,6 +50,7 @@ abstract class WidgetModel {
     Stream<T?> stream,
     void Function(T? value) onValue, {
     void Function(Object error, StackTrace stackTrace)? onError,
+    bool? cancelOnError,
   }) {
     final subscription = stream.listen(
       (value) {
@@ -59,10 +60,9 @@ abstract class WidgetModel {
         if (onError == null) throw e;
         onError.call(e, s);
       },
-    )..onError((Object e, StackTrace s) {
-        if (onError == null) throw e;
-        onError.call(e, s);
-      });
+      cancelOnError: cancelOnError,
+
+    );
     return _compositeSubscription.add<T>(subscription);
   }
 
@@ -71,6 +71,7 @@ abstract class WidgetModel {
     Stream<T> stream,
     void Function(T value) onValue, {
     void Function(Object error, Object stackTrace)? onError,
+    bool? cancelOnError,
   }) {
     final subscription = stream.listen(
       (value) {
@@ -82,13 +83,19 @@ abstract class WidgetModel {
         final isSuccessfully = handleError(e, s);
         if (!isSuccessfully && onError == null) throw e;
       },
+      cancelOnError: cancelOnError,
     )..onError((Object e, StackTrace s) {
+        if (onError == null && _errorHandler == null) throw e;
+        onError?.call(e, s);
+        final isSuccessfully = handleError(e, s);
+        if (!isSuccessfully && onError == null) throw e;
+      });
+    return _compositeSubscription.add<T>(subscription)..onError((Object e, StackTrace s){
       if (onError == null && _errorHandler == null) throw e;
       onError?.call(e, s);
       final isSuccessfully = handleError(e, s);
       if (!isSuccessfully && onError == null) throw e;
     });
-    return _compositeSubscription.add<T>(subscription);
   }
 
   /// Call a future.
