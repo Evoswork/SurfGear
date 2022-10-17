@@ -16,8 +16,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mwwm/mwwm.dart';
-import 'package:mwwm/src/dependencies/wm_dependencies.dart';
-import 'package:mwwm/src/error/error_handler.dart';
 import 'package:mwwm/src/utils/composite_subscription.dart';
 
 /// WidgetModel
@@ -51,16 +49,17 @@ abstract class WidgetModel {
   StreamSubscription<T?> subscribe<T>(
     Stream<T?> stream,
     void Function(T? value) onValue, {
-    void Function(Object error, Object stackTrace)? onError,
+    void Function(Object error, StackTrace stackTrace)? onError,
   }) {
-    final subscription = stream.listen((value) {
-      try {
+    final subscription = stream.listen(
+      (value) {
         onValue.call(value);
-      } catch (e, s) {
-        if (onError == null) rethrow;
+      },
+      onError: (Object e, StackTrace s) {
+        if (onError == null) throw e;
         onError.call(e, s);
-      }
-    });
+      },
+    );
     return _compositeSubscription.add<T>(subscription);
   }
 
@@ -70,16 +69,17 @@ abstract class WidgetModel {
     void Function(T value) onValue, {
     void Function(Object error, Object stackTrace)? onError,
   }) {
-    final subscription = stream.listen((value) {
-      try {
+    final subscription = stream.listen(
+      (value) {
         onValue.call(value);
-      } catch (e, s) {
-        if (onError == null && _errorHandler == null) rethrow;
+      },
+      onError: (Object e, StackTrace s) {
+        if (onError == null && _errorHandler == null) throw e;
         onError?.call(e, s);
         final isSuccessfully = handleError(e, s);
-        if (!isSuccessfully && onError == null) rethrow;
-      }
-    });
+        if (!isSuccessfully && onError == null) throw e;
+      },
+    );
     return _compositeSubscription.add<T>(subscription);
   }
 
@@ -131,7 +131,7 @@ abstract class WidgetModel {
 
   /// standard error handling
   @protected
-  bool handleError(Object e, dynamic s) {
+  bool handleError(Object e, StackTrace s) {
     return _errorHandler?.handleError(e, s) ?? false;
   }
 }
