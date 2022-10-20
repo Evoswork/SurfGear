@@ -53,6 +53,11 @@ class StreamedState<T> implements Event<T> {
     return stateSubject.stream.first;
   }
 
+  Future<T?> reAccept() {
+    stateSubject.add(value);
+    return stateSubject.stream.first;
+  }
+
   void dispose() {
     stateSubject.close();
   }
