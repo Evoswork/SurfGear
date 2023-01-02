@@ -18,6 +18,8 @@ import 'package:relation/src/relation/state/streamed_state.dart';
 ///[StreamedState] that have download/error/content status
 class EntityStreamedState<T> extends StreamedState<EntityState<T>>
     implements EntityEvent<T, EntityState<T>> {
+  T? get data => stateSubject.value!.data;
+
   EntityStreamedState([EntityState<T>? initialData])
       : super(initialData ?? EntityState<T>.loading());
 
