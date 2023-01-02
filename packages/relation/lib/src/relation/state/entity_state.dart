@@ -40,6 +40,15 @@ class EntityStreamedState<T> extends StreamedState<EntityState<T>>
     final newState = EntityState<T>.loading(previousData);
     return super.accept(newState);
   }
+
+  @override
+  Future<EntityState<T>?> reAccept() async {
+    if (!(super.value?.isContent ?? false)) {
+      return throw Exception('Error: wrong state EntityState');
+    }
+    EntityState<T>.content(super.value?.data);
+    return super.reAccept();
+  }
 }
 
 /// State of some logical entity
