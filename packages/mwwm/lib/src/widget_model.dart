@@ -95,6 +95,7 @@ abstract class WidgetModel {
     Future<T> future, {
     void Function(T value)? onValue,
     void Function(Object error, StackTrace stackTrace)? onError,
+    void Function()? onFinally,
   }) async {
     try {
       if (onValue == null) {
@@ -106,6 +107,8 @@ abstract class WidgetModel {
     } catch (e, s) {
       if (onError == null) rethrow;
       onError(e, s);
+    } finally {
+      onFinally?.call();
     }
   }
 
@@ -114,6 +117,7 @@ abstract class WidgetModel {
     Future<T> future, {
     void Function(T value)? onValue,
     void Function(Object error, StackTrace stackTrace)? onError,
+    void Function()? onFinally,
   }) async {
     try {
       if (onValue == null) {
@@ -127,6 +131,8 @@ abstract class WidgetModel {
       onError?.call(e, s);
       final isSuccessfully = handleError(e, s);
       if (!isSuccessfully && onError == null) rethrow;
+    } finally {
+      onFinally?.call();
     }
   }
 
