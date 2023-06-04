@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:relation/src/relation/event.dart';
-import 'package:relation/src/relation/state/streamed_state.dart';
+import 'package:relation/relation.dart';
 
 ///[StreamedState] that have download/error/content status
-class EntityStreamedState<T> extends StreamedState<EntityState<T>>
+class EntityStreamedState<T> extends StreamedStateNS<EntityState<T>>
     implements EntityEvent<T, EntityState<T>> {
-  T? get data => stateSubject.value!.data;
+  T? get data => stateSubject.value.data;
 
   EntityStreamedState([EntityState<T>? initialData])
       : super(initialData ?? EntityState<T>.loading());
@@ -45,10 +44,10 @@ class EntityStreamedState<T> extends StreamedState<EntityState<T>>
 
   @override
   Future<EntityState<T>?> reAccept() async {
-    if (!(super.value?.isContent ?? false)) {
+    if (!super.value.isContent) {
       return throw Exception('Error: wrong state EntityState');
     }
-    EntityState<T>.content(super.value?.data);
+    EntityState<T>.content(super.value.data);
     return super.reAccept();
   }
 }
