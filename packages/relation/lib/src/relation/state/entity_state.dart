@@ -44,11 +44,14 @@ class EntityStreamedState<T> extends StreamedStateNS<EntityState<T>>
 
   @override
   Future<EntityState<T>?> reAccept() async {
-    if (!super.value.isContent) {
-      return throw Exception('Error: wrong state EntityState');
+    if (value.isContent) {
+      return EntityState<T>.content(value.data);
     }
-    EntityState<T>.content(super.value.data);
-    return super.reAccept();
+    if (value.isLoading) {
+      return EntityState<T>.loading(value.data);
+    }
+
+    return throw Exception('Error: wrong state EntityState');
   }
 }
 
