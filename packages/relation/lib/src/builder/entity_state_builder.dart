@@ -88,9 +88,9 @@ class EntityStateBuilder<T> extends StatelessWidget {
         }
         if (streamData != null) {
           if (streamData.isLoading) {
-            return loadingBuilder != null
-                ? loadingBuilder!(context, streamData.data)
-                : loadingChild;
+            return loadingBuilder == null
+                ? loadingChild
+                : loadingBuilder!(context, streamData.data);
           } else if (streamData.hasError) {
             if (errorDataBuilder != null) {
               return errorDataBuilder!(
