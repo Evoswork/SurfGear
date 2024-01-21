@@ -23,18 +23,18 @@ import 'package:mwwm/src/utils/composite_subscription.dart';
 /// `WidgetModelDependencies` - is pack of dependencies for WidgetModel. Offtenly, it is `ErrorHandler`.
 /// `Model` - optionally, but recommended, manager for connection with bussines layer
 abstract class WidgetModel {
+  @protected
+  final Model model;
+
+  final ErrorHandler? _errorHandler;
+
+  final _compositeSubscription = CompositeSubscription();
+
   WidgetModel(
     WidgetModelDependencies baseDependencies, {
     Model? model,
   })  : _errorHandler = baseDependencies.errorHandler,
         model = model ?? const Model([]);
-
-  final ErrorHandler? _errorHandler;
-
-  @protected
-  final Model model;
-
-  final _compositeSubscription = CompositeSubscription();
 
   /// called when widget ready
   void onInit() {}
@@ -56,7 +56,7 @@ abstract class WidgetModel {
       (value) {
         try {
           onValue.call(value);
-        } catch (e, s) {
+        } on Exception catch (e, s) {
           if (onError == null) rethrow;
           onError.call(e, s);
         }
@@ -77,7 +77,7 @@ abstract class WidgetModel {
       (value) {
         try {
           onValue.call(value);
-        } catch (e, s) {
+        } on Exception catch (e, s) {
           if (onError == null && _errorHandler == null) rethrow;
           onError?.call(e, s);
           final isSuccessfully = handleError(e, s);
@@ -104,7 +104,7 @@ abstract class WidgetModel {
         final result = await future;
         onValue.call(result);
       }
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       if (onError == null) rethrow;
       onError(e, s);
     } finally {
@@ -126,7 +126,7 @@ abstract class WidgetModel {
         final result = await future;
         onValue.call(result);
       }
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       if (onError == null && _errorHandler == null) rethrow;
       onError?.call(e, s);
       final isSuccessfully = handleError(e, s);
