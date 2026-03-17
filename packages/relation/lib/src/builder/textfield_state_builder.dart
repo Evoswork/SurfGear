@@ -35,7 +35,7 @@ class TextFieldStateBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamedStateBuilder<TextFieldState>(
-      streamedState: state,
+      stream: state,
       builder: stateBuilder,
     );
   }

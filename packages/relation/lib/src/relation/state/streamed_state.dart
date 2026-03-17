@@ -27,11 +27,18 @@ import 'package:rxdart/rxdart.dart';
 ///     builder: (ctx, data) => Text(data.toString()),
 ///   )
 /// ```
-class StreamedState<T> implements Event<T> {
+abstract class StreamedStateLike<T> {
+  Stream<T?> get stream;
+
+  T? get value;
+}
+
+class StreamedState<T> implements Event<T>, StreamedStateLike<T> {
   /// Behavior state for updating events
   final BehaviorSubject<T?> stateSubject = BehaviorSubject();
 
   /// current value in stream
+  @override
   T? get value => stateSubject.valueOrNull;
 
   @override

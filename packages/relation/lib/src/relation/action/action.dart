@@ -38,27 +38,42 @@ class Action<T> implements Event<T> {
   /// Publish subject for updating actions
   final _actionSubject = PublishSubject<T?>();
 
-  T? get value => _value;
-
   @override
   Stream<T?> get stream => _actionSubject.stream;
-
-  /// Data of action
-  T? _value;
 
   Action([void Function(T? data)? onChanged]) : onChanged = onChanged ?? ((_) {});
 
   @override
   Future<T?> accept([T? data]) async {
-    _value = data;
-    _actionSubject.add(_value);
-    onChanged(_value);
-    return _actionSubject.stream.first;
+    _actionSubject.add(data);
+    onChanged(data);
+    return Future.value(data);
   }
 
   /// Call action
   Future<T?> call([T? data]) => accept(data);
 
   /// Close stream
+  Future<void> dispose() => _actionSubject.close();
+}
+
+class ActionNS<T> implements EventNS<T> {
+  final void Function(T data) onChanged;
+  final _actionSubject = PublishSubject<T>();
+
+  ActionNS([void Function(T data)? onChanged]) : onChanged = onChanged ?? ((_) {});
+
+  @override
+  Stream<T> get stream => _actionSubject.stream;
+
+  @override
+  Future<T> accept(T data) async {
+    _actionSubject.add(data);
+    onChanged(data);
+    return Future.value(data);
+  }
+
+  Future<T> call(T data) => accept(data);
+
   Future<void> dispose() => _actionSubject.close();
 }

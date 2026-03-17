@@ -87,7 +87,7 @@ class _DemoRelationsState extends State<DemoRelations> {
           children: <Widget>[
             /// build state by StreamedState
             r.StreamedStateBuilder<int>(
-              streamedState: incrementState,
+              stream: incrementState,
               builder: (ctx, count) => Text('number of count: $count'),
             ),
 
@@ -97,7 +97,6 @@ class _DemoRelationsState extends State<DemoRelations> {
             TextButton(
               onPressed: incrementAction,
               style: TextButton.styleFrom(
-                primary: Colors.black,
                 backgroundColor: Colors.red,
               ),
               child: const Text('increment'),
@@ -127,7 +126,6 @@ class _DemoRelationsState extends State<DemoRelations> {
           TextButton(
             onPressed: reloadAction,
             style: TextButton.styleFrom(
-              primary: Colors.black,
               backgroundColor: Colors.red,
             ),
             child: const Text('reload'),

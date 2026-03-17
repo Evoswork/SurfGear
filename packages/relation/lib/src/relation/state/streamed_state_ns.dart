@@ -1,11 +1,12 @@
-import 'package:relation/src/relation/event.dart';
+import 'package:relation/relation.dart';
 import 'package:rxdart/rxdart.dart';
 
-class StreamedStateNS<T> implements EventNS<T> {
+class StreamedStateNS<T> implements EventNS<T>, StreamedStateLike<T> {
   /// Behavior state for updating events
   final BehaviorSubject<T> stateSubject = BehaviorSubject();
 
   /// current value in stream
+  @override
   T get value => stateSubject.value;
 
   @override
