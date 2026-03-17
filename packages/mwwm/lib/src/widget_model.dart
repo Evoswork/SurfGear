@@ -46,28 +46,7 @@ abstract class WidgetModel {
   void onBind() {}
 
   /// subscribe for interactors
-  StreamSubscription<T?> subscribe<T>(
-    Stream<T?> stream,
-    void Function(T? value) onValue, {
-    void Function(Object error, StackTrace stackTrace)? onError,
-    bool? cancelOnError,
-  }) {
-    final subscription = stream.listen(
-      (value) {
-        try {
-          onValue.call(value);
-        } on Exception catch (e, s) {
-          if (onError == null) rethrow;
-          onError.call(e, s);
-        }
-      },
-      cancelOnError: cancelOnError,
-    );
-    return _compositeSubscription.add<T>(subscription);
-  }
-
-  /// subscribe for interactors with default handle error
-  StreamSubscription<T?> subscribeHandleError<T>(
+  StreamSubscription<T> subscribe<T>(
     Stream<T> stream,
     void Function(T value) onValue, {
     void Function(Object error, StackTrace stackTrace)? onError,
@@ -76,8 +55,29 @@ abstract class WidgetModel {
     final subscription = stream.listen(
       (value) {
         try {
-          onValue.call(value);
-        } on Exception catch (e, s) {
+          onValue(value);
+        } catch (e, s) {
+          if (onError == null) rethrow;
+          onError(e, s);
+        }
+      },
+      cancelOnError: cancelOnError,
+    );
+    return _compositeSubscription.add<T>(subscription);
+  }
+
+  /// subscribe for interactors with default handle error
+  StreamSubscription<T> subscribeHandleError<T>(
+    Stream<T> stream,
+    void Function(T value) onValue, {
+    void Function(Object error, StackTrace stackTrace)? onError,
+    bool? cancelOnError,
+  }) {
+    final subscription = stream.listen(
+      (value) {
+        try {
+          onValue(value);
+        } catch (e, s) {
           if (onError == null && _errorHandler == null) rethrow;
           onError?.call(e, s);
           final isSuccessfully = handleError(e, s);
@@ -102,9 +102,9 @@ abstract class WidgetModel {
         await future;
       } else {
         final result = await future;
-        onValue.call(result);
+        onValue(result);
       }
-    } on Exception catch (e, s) {
+    } catch (e, s) {
       if (onError == null) rethrow;
       onError(e, s);
     } finally {
@@ -124,9 +124,9 @@ abstract class WidgetModel {
         await future;
       } else {
         final result = await future;
-        onValue.call(result);
+        onValue(result);
       }
-    } on Exception catch (e, s) {
+    } catch (e, s) {
       if (onError == null && _errorHandler == null) rethrow;
       onError?.call(e, s);
       final isSuccessfully = handleError(e, s);
