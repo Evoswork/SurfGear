@@ -36,6 +36,9 @@ abstract class WidgetModel {
   })  : _errorHandler = baseDependencies.errorHandler,
         model = model ?? const Model([]);
 
+  @protected
+  bool isDisposed = false;
+
   /// called when widget ready
   void onInit() {}
 
@@ -138,6 +141,7 @@ abstract class WidgetModel {
 
   /// Close streams of WM
   void dispose() {
+    isDisposed = true;
     _compositeSubscription.dispose();
   }
 
